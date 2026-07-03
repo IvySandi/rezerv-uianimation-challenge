@@ -5,7 +5,7 @@ type BeanCollectionLinkProps = {
 export function BeanCollectionLink({ isReady }: BeanCollectionLinkProps) {
   return (
     <a
-      href="#top"
+      href="#"
       aria-label="View collection"
       className="fixed bottom-[-56px] right-[-18px] z-40 block h-[172px] w-[318px] sm:bottom-[-66px] sm:right-[-12px] sm:h-[204px] sm:w-[374px]"
       style={{ opacity: isReady ? 1 : 0, pointerEvents: isReady ? "auto" : "none" }}

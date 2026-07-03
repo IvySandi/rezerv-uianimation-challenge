@@ -1,10 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { brandIntroShapes } from "./BrandIntroSlide.config";
-import type { BrandIntroSlideProps } from "./BrandIntroSlide.types";
+import { secondSlideShapes } from "./secondSlide.config";
+import type { SecondSlideProps } from "./secondSlide.types";
 
-export function BrandIntroSlide({
+export function SecondSlide({
   isReady,
   isVisible,
   shouldReduceMotion,
@@ -16,7 +16,7 @@ export function BrandIntroSlide({
   characterRotate = 86,
   titleClassName = "text-[clamp(4.75rem,17vw,17.5rem)]",
   showCharacter = true,
-}: BrandIntroSlideProps) {
+}: SecondSlideProps) {
   return (
     <motion.div
       className="absolute inset-0 overflow-hidden"
@@ -29,7 +29,7 @@ export function BrandIntroSlide({
       transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
       aria-hidden={!isVisible}
     >
-      {brandIntroShapes.map((shape, index) => (
+      {secondSlideShapes.map((shape, index) => (
         <motion.div
           key={`${shape.className}-${index}`}
           className={`pointer-events-none absolute top-full opacity-85 blur-[0.5px] ${shape.className}`}

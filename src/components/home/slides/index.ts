@@ -1,8 +1,8 @@
-export { BrandIntroSlide } from "./BrandIntroSlide";
-export { brandIntroShapes } from "./BrandIntroSlide.config";
+export { SecondSlide } from "./secondSlide";
+export { secondSlideShapes } from "./secondSlide.config";
 export type {
-  BrandIntroShape,
-  BrandIntroSlideProps,
-} from "./BrandIntroSlide.types";
-export { CollageSlide } from "./CollageSlide";
-export { StorySlide } from "./StorySlide";
+  SecondSlideProps,
+  SecondSlideShape,
+} from "./secondSlide.types";
+export { FirstSlide } from "./firstSlide";
+export { StorySlide } from "./thirdSlide";

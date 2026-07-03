@@ -1,18 +1,21 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
+import Lottie, { type LottieRefCurrentProps } from "lottie-react";
 import { bannerSlides, socialLinks } from "@/config/banner.config";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SocialDock } from "@/components/layout/SocialDock";
 import { BeanCollectionLink } from "@/components/layout/BeanCollectionLink";
-import { BrandIntroSlide, CollageSlide, StorySlide } from "@/components/home/slides";
+import { FirstSlide, SecondSlide, StorySlide } from "@/components/home/slides";
+import walkingBusinessWomanAnimation from "../../../public/assets/preloader/Walking business woman.json";
 
 const slideScrollHeightVh = 100;
 const wheelSwipeThreshold = 80;
+const wheelGestureResetMs = 140;
 const touchSwipeThreshold = 90;
 const slideTransitionMs = 950;
+const secondSlideWalkingSpeed = 0.45;
 
 type HeroBannerProps = {
   isReady: boolean;
@@ -23,13 +26,34 @@ export function HeroBanner({ isReady }: HeroBannerProps) {
   const hasResetScrollRef = useRef(false);
   const activeSlideIndexRef = useRef(0);
   const isSlideChangingRef = useRef(false);
+  const wheelDeltaRef = useRef(0);
+  const wheelGestureTimeoutRef = useRef<number | null>(null);
   const touchStartYRef = useRef<number | null>(null);
+  const walkingLottieRef = useRef<LottieRefCurrentProps | null>(null);
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const shouldReduceMotion = useReducedMotion();
   const activeSlide = bannerSlides[activeSlideIndex];
+  const isFirstSlide = activeSlideIndex === 0;
   const isSecondSlide = activeSlideIndex === 1;
   const isThirdSlide = activeSlideIndex >= 2;
-  const isSecondSlideOrBeyond = activeSlideIndex >= 1;
+  const shouldPlayWalkingAnimation = Boolean(!shouldReduceMotion);
+  const shouldAutoplayWalkingAnimation = Boolean(
+    shouldPlayWalkingAnimation && !isFirstSlide,
+  );
+
+  useEffect(() => {
+    const walkingAnimation = walkingLottieRef.current;
+    if (!walkingAnimation) return;
+
+    if (!shouldAutoplayWalkingAnimation) {
+      walkingAnimation.setSpeed(1);
+      walkingAnimation.goToAndStop(0, true);
+      return;
+    }
+
+    walkingAnimation.setSpeed(isSecondSlide ? secondSlideWalkingSpeed : 1);
+    walkingAnimation.play();
+  }, [isSecondSlide, shouldAutoplayWalkingAnimation]);
 
   useEffect(() => {
     if (hasResetScrollRef.current || !isReady) return;
@@ -68,10 +92,10 @@ export function HeroBanner({ isReady }: HeroBannerProps) {
     };
 
     const goToSlide = (requestedIndex: number) => {
-      const nextIndex = Math.max(
-        0,
-        Math.min(bannerSlides.length - 1, requestedIndex),
-      );
+      const nextIndex =
+        requestedIndex > bannerSlides.length - 1
+          ? 0
+          : Math.max(0, requestedIndex);
 
       if (nextIndex === activeSlideIndexRef.current) return;
 
@@ -89,19 +113,60 @@ export function HeroBanner({ isReady }: HeroBannerProps) {
       }, shouldReduceMotion ? 50 : slideTransitionMs);
     };
 
+    const getNormalizedWheelDeltaY = (event: WheelEvent) => {
+      if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) {
+        return event.deltaY * 16;
+      }
+
+      if (event.deltaMode === WheelEvent.DOM_DELTA_PAGE) {
+        return event.deltaY * window.innerHeight;
+      }
+
+      return event.deltaY;
+    };
+
+    const resetWheelGesture = () => {
+      wheelDeltaRef.current = 0;
+
+      if (wheelGestureTimeoutRef.current !== null) {
+        window.clearTimeout(wheelGestureTimeoutRef.current);
+        wheelGestureTimeoutRef.current = null;
+      }
+    };
+
     const handleWheel = (event: WheelEvent) => {
       if (!isInsideHero()) return;
 
       event.preventDefault();
 
-      if (
-        isSlideChangingRef.current ||
-        Math.abs(event.deltaY) < wheelSwipeThreshold
-      ) {
+      if (isSlideChangingRef.current) {
         return;
       }
 
-      goToSlide(activeSlideIndexRef.current + Math.sign(event.deltaY));
+      const deltaY = getNormalizedWheelDeltaY(event);
+
+      if (Math.sign(deltaY) !== Math.sign(wheelDeltaRef.current)) {
+        wheelDeltaRef.current = 0;
+      }
+
+      wheelDeltaRef.current += deltaY;
+
+      if (wheelGestureTimeoutRef.current !== null) {
+        window.clearTimeout(wheelGestureTimeoutRef.current);
+      }
+
+      wheelGestureTimeoutRef.current = window.setTimeout(
+        resetWheelGesture,
+        wheelGestureResetMs,
+      );
+
+      if (Math.abs(wheelDeltaRef.current) < wheelSwipeThreshold) {
+        return;
+      }
+
+      const direction = Math.sign(wheelDeltaRef.current);
+      resetWheelGesture();
+      goToSlide(activeSlideIndexRef.current + direction);
     };
 
     const handleTouchStart = (event: TouchEvent) => {
@@ -170,6 +235,7 @@ export function HeroBanner({ isReady }: HeroBannerProps) {
       window.removeEventListener("touchend", handleTouchEnd);
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("resize", handleResize);
+      resetWheelGesture();
     };
   }, [isReady, shouldReduceMotion]);
 
@@ -190,27 +256,74 @@ export function HeroBanner({ isReady }: HeroBannerProps) {
         <SiteHeader brandName="Rezerv" />
         <SocialDock links={socialLinks} />
 
-        <CollageSlide
+        <FirstSlide
           activeSlide={activeSlide}
           isReady={isReady}
           isVisible={activeSlideIndex === 0}
           shouldReduceMotion={Boolean(shouldReduceMotion)}
         />
         <motion.div
+          className="pointer-events-none absolute z-[999] overflow-visible select-none"
+          initial={false}
+          animate={{
+            left: "32vw",
+            top: "38vh",
+            width: "46vw",
+            height: "108vh",
+            minWidth: "30rem",
+            minHeight: "44rem",
+            maxWidth: "none",
+            rotate: -7,
+            opacity: isReady && isFirstSlide ? 1 : 0,
+          }}
+          transition={{
+            duration: shouldReduceMotion ? 0.01 : 0.35,
+            ease: "easeOut",
+          }}
+          style={{ transformOrigin: "center center" }}
+          draggable={false}
+          aria-hidden="true"
+        >
+          <motion.div
+            className="h-full w-full"
+            animate={
+              isReady && isFirstSlide && !shouldReduceMotion
+                ? { y: [0, -16, 0] }
+                : { y: 0 }
+            }
+            transition={{
+              duration: 2.2,
+              repeat: isReady && isFirstSlide && !shouldReduceMotion ? Infinity : 0,
+              ease: "easeInOut",
+            }}
+          >
+            <Lottie
+              animationData={walkingBusinessWomanAnimation}
+              aria-hidden="true"
+              autoplay={false}
+              className="h-full w-full"
+              loop={false}
+              rendererSettings={{
+                preserveAspectRatio: "xMidYMid meet",
+              }}
+            />
+          </motion.div>
+        </motion.div>
+        <motion.div
           className="pointer-events-none absolute z-30 overflow-hidden select-none will-change-transform"
           initial={false}
           animate={{
-            left: isThirdSlide ? "24vw" : isSecondSlide ? "50vw" : "32vw",
-            top: isThirdSlide ? "58vh" : isSecondSlide ? "62vh" : "-8vh",
-            width: isThirdSlide ? "42vw" : isSecondSlide ? "38vw" : "37vw",
-            height: isThirdSlide ? "42vw" : isSecondSlide ? "38vw" : "90vh",
-            minWidth: isThirdSlide ? "25rem" : isSecondSlide ? "28rem" : "23rem",
-            minHeight: isThirdSlide ? "25rem" : isSecondSlide ? "28rem" : "35rem",
-            maxWidth: isThirdSlide ? "34rem" : isSecondSlide ? "36rem" : "none",
-            x: isSecondSlideOrBeyond ? "-50%" : "0%",
-            y: isSecondSlideOrBeyond ? "-50%" : "0%",
-            rotate: isThirdSlide ? -4 : isSecondSlide ? 90 : -7,
-            opacity: isReady ? 1 : 0,
+            left: isSecondSlide ? "50vw" : "8vw",
+            top: isSecondSlide ? "63vh" : "36vh",
+            width: isSecondSlide ? "42vw" : "36vw",
+            height: isSecondSlide ? "42vw" : "82vh",
+            minWidth: isSecondSlide ? "26rem" : "20rem",
+            minHeight: isSecondSlide ? "26rem" : "36rem",
+            maxWidth: isFirstSlide ? "none" : isSecondSlide ? "42rem" : "30rem",
+            x: isThirdSlide ? "0%" : "-50%",
+            y: isThirdSlide ? "0%" : "-50%",
+            rotate: isSecondSlide ? -90 : -3,
+            opacity: isReady && !isFirstSlide ? 1 : 0,
           }}
           transition={{
             duration: shouldReduceMotion ? 0.01 : 0.9,
@@ -224,33 +337,33 @@ export function HeroBanner({ isReady }: HeroBannerProps) {
             className="absolute inset-0"
             initial={false}
             animate={{
-              scale: isThirdSlide ? 0.92 : isSecondSlide ? 1 : 2.25,
-              scaleY: isThirdSlide ? 1 : isSecondSlide ? -1 : 1,
-              y: isThirdSlide && !shouldReduceMotion ? [0, -10, 0, -6, 0] : 0,
-              rotate: isThirdSlide && !shouldReduceMotion ? [0, -2, 2, -1, 0] : 0,
+              scale: isFirstSlide ? 1 : isSecondSlide ? 1.04 : 1.02,
+              scaleY: 1,
+              y: 0,
+              rotate: 0,
             }}
             transition={{
-              duration: isThirdSlide && !shouldReduceMotion ? 1.2 : shouldReduceMotion ? 0.01 : 0.9,
-              repeat: isThirdSlide && !shouldReduceMotion ? Infinity : 0,
-              ease: isThirdSlide && !shouldReduceMotion ? "easeInOut" : [0.16, 1, 0.3, 1],
+              duration: shouldReduceMotion ? 0.01 : 0.9,
+              ease: [0.16, 1, 0.3, 1],
             }}
-            style={{ transformOrigin: isSecondSlideOrBeyond ? "center" : "50% 8%" }}
+            style={{ transformOrigin: "center center" }}
           >
-            <Image
-              src="/assets/transhumans/Chillin.svg"
-              alt=""
-              fill
-              priority
-              sizes="40vw"
-              draggable={false}
-              className="object-cover"
-              style={{
-                objectPosition: isSecondSlideOrBeyond ? "50% 50%" : "50% 8%",
-              }}
-            />
+            <div className="h-full w-full">
+              <Lottie
+                animationData={walkingBusinessWomanAnimation}
+                aria-hidden="true"
+                autoplay={shouldAutoplayWalkingAnimation}
+                className="h-full w-full"
+                lottieRef={walkingLottieRef}
+                loop={shouldAutoplayWalkingAnimation}
+                rendererSettings={{
+                  preserveAspectRatio: "xMidYMid meet",
+                }}
+              />
+            </div>
           </motion.div>
         </motion.div>
-        <BrandIntroSlide
+        <SecondSlide
           isReady={isReady}
           isVisible={activeSlideIndex === 1}
           shouldReduceMotion={Boolean(shouldReduceMotion)}

@@ -1,4 +1,4 @@
-export type BrandIntroSlideProps = {
+export type SecondSlideProps = {
   isReady: boolean;
   isVisible: boolean;
   shouldReduceMotion: boolean;
@@ -12,7 +12,7 @@ export type BrandIntroSlideProps = {
   showCharacter?: boolean;
 };
 
-export type BrandIntroShape = {
+export type SecondSlideShape = {
   className: string;
   x: number[];
   rotate: number[];
