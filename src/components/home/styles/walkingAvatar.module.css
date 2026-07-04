@@ -1,0 +1,455 @@
+.walkingAvatar {
+  --skin: #f8f8f8;
+  --skin-dark: #d8d8d8;
+  --hair: #111111;
+  --shirt: #ffffff;
+  --shirt-dark: #e6e6e6;
+  --accent: #111111;
+  --shorts: #d4d4d4;
+  --leg: #151515;
+  --shoe: #000000;
+  --line: #111111;
+
+  display: flex;
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.figure {
+  position: relative;
+  height: 100%;
+  aspect-ratio: 2 / 3;
+  transform-origin: 50% 78%;
+}
+
+.hairBack,
+.neck,
+.head,
+.arm,
+.body,
+.shorts,
+.leg {
+  position: absolute;
+  display: block;
+}
+
+.hairBack {
+  left: 34%;
+  top: 5%;
+  z-index: 1;
+  width: 36%;
+  height: 22%;
+  border-radius: 50% 50% 46% 48%;
+  background: var(--hair);
+  transform: rotate(-5deg);
+}
+
+.neck {
+  left: 47%;
+  top: 22%;
+  z-index: 3;
+  width: 12%;
+  height: 9%;
+  border-radius: 0 0 999px 999px;
+  background: var(--skin-dark);
+}
+
+.head {
+  left: 38%;
+  top: 8%;
+  z-index: 4;
+  width: 28%;
+  height: 18%;
+  border-radius: 48% 48% 45% 45%;
+  background: var(--skin);
+  box-shadow:
+    inset -0.55rem -0.35rem 0 rgba(0, 0, 0, 0.12),
+    0 0 0 0.12rem var(--line);
+  transform-origin: 50% 90%;
+}
+
+.hairFront {
+  position: absolute;
+  left: -9%;
+  top: -12%;
+  width: 84%;
+  height: 42%;
+  border-radius: 999px 999px 55% 35%;
+  background: var(--hair);
+  transform: rotate(-8deg);
+}
+
+.hairFront::after {
+  position: absolute;
+  right: -19%;
+  top: 24%;
+  width: 36%;
+  height: 86%;
+  border-radius: 999px;
+  background: var(--hair);
+  content: "";
+  transform: rotate(18deg);
+}
+
+.eye {
+  position: absolute;
+  top: 48%;
+  width: 6%;
+  height: 6%;
+  border-radius: 999px;
+  background: var(--line);
+}
+
+.eyeLeft {
+  left: 35%;
+}
+
+.eyeRight {
+  right: 28%;
+}
+
+.smile {
+  position: absolute;
+  left: 43%;
+  top: 66%;
+  width: 22%;
+  height: 11%;
+  border-bottom: 0.16rem solid var(--line);
+  border-radius: 0 0 999px 999px;
+}
+
+.body {
+  left: 34%;
+  top: 28%;
+  z-index: 3;
+  width: 34%;
+  height: 31%;
+  border-radius: 34% 34% 28% 28%;
+  background: linear-gradient(140deg, var(--shirt), var(--shirt-dark));
+  box-shadow:
+    inset -0.9rem -0.7rem 0 rgba(0, 0, 0, 0.12),
+    0 0 0 0.14rem var(--line);
+  transform-origin: 50% 92%;
+}
+
+.collar {
+  position: absolute;
+  left: 31%;
+  top: 0;
+  width: 38%;
+  height: 18%;
+  border-radius: 0 0 999px 999px;
+  background: #ffffff;
+  box-shadow: 0 0.08rem 0 var(--line);
+}
+
+.bag {
+  position: absolute;
+  right: -8%;
+  top: 25%;
+  width: 18%;
+  height: 44%;
+  border-radius: 999px;
+  background: var(--accent);
+  box-shadow: -0.24rem 0.34rem 0 rgba(0, 0, 0, 0.22);
+}
+
+.shorts {
+  left: 38%;
+  top: 55%;
+  z-index: 4;
+  width: 27%;
+  height: 10%;
+  border-radius: 0 0 36% 36%;
+  background: var(--shorts);
+  box-shadow: 0 0 0 0.12rem var(--line);
+}
+
+.arm {
+  top: 32%;
+  z-index: 2;
+  width: 8%;
+  height: 28%;
+  border-radius: 999px;
+  background: var(--skin);
+  box-shadow: 0 0 0 0.1rem var(--line);
+  transform-origin: 50% 8%;
+}
+
+.arm::before {
+  position: absolute;
+  left: 4%;
+  top: -4%;
+  width: 92%;
+  height: 28%;
+  border-radius: 999px;
+  background: var(--shirt);
+  content: "";
+}
+
+.armLeft {
+  left: 31%;
+  transform: rotate(22deg);
+}
+
+.armRight {
+  right: 28%;
+  transform: rotate(-24deg);
+}
+
+.hand {
+  position: absolute;
+  left: 4%;
+  bottom: -5%;
+  width: 92%;
+  height: 16%;
+  border-radius: 999px;
+  background: var(--skin);
+  box-shadow: 0 0 0 0.08rem var(--line);
+}
+
+.leg {
+  top: 62%;
+  z-index: 2;
+  width: 9%;
+  height: 27%;
+  border-radius: 999px;
+  background: var(--leg);
+  transform-origin: 50% 5%;
+}
+
+.legLeft {
+  left: 42%;
+  transform: rotate(-13deg);
+}
+
+.legRight {
+  left: 54%;
+  transform: rotate(14deg);
+}
+
+.shoe {
+  position: absolute;
+  left: -22%;
+  bottom: -4%;
+  width: 154%;
+  height: 17%;
+  border-radius: 999px 999px 48% 48%;
+  background: var(--shoe);
+}
+
+.legRight .shoe {
+  left: -31%;
+}
+
+.idleBobbing .hairBack {
+  animation: walking-avatar-idle-hair-back 2.4s ease-in-out infinite;
+}
+
+.idleBobbing .head {
+  animation: walking-avatar-idle-head 2.4s ease-in-out infinite;
+}
+
+.idleBobbing .body {
+  animation: walking-avatar-idle-body 2.4s ease-in-out infinite;
+}
+
+.idleBobbing .armLeft {
+  animation: walking-avatar-idle-arm-left 2.4s ease-in-out infinite;
+}
+
+.idleBobbing .armRight {
+  animation: walking-avatar-idle-arm-right 2.4s ease-in-out infinite;
+}
+
+.idleBobbing .legLeft {
+  animation: walking-avatar-idle-leg-left 2.4s ease-in-out infinite;
+}
+
+.idleBobbing .legRight {
+  animation: walking-avatar-idle-leg-right 2.4s ease-in-out infinite;
+}
+
+.walking .head {
+  animation: walking-avatar-head var(--walk-duration) ease-in-out infinite;
+}
+
+.walking .body {
+  animation: walking-avatar-body var(--walk-duration) ease-in-out infinite;
+}
+
+.walking .armLeft {
+  animation: walking-avatar-arm-left var(--walk-duration) ease-in-out infinite;
+}
+
+.walking .armRight {
+  animation: walking-avatar-arm-right var(--walk-duration) ease-in-out infinite;
+}
+
+.walking .legLeft {
+  animation: walking-avatar-leg-left var(--walk-duration) ease-in-out infinite;
+}
+
+.walking .legRight {
+  animation: walking-avatar-leg-right var(--walk-duration) ease-in-out infinite;
+}
+
+@keyframes walking-avatar-idle-head {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  50% {
+    transform: rotate(1.5deg);
+  }
+}
+
+@keyframes walking-avatar-idle-body {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+
+  50% {
+    transform: rotate(-1deg);
+  }
+}
+
+@keyframes walking-avatar-idle-hair-back {
+  0%,
+  100% {
+    transform: rotate(-5deg);
+  }
+
+  50% {
+    transform: rotate(-4deg);
+  }
+}
+
+@keyframes walking-avatar-idle-arm-left {
+  0%,
+  100% {
+    transform: rotate(22deg);
+  }
+
+  50% {
+    transform: rotate(18deg);
+  }
+}
+
+@keyframes walking-avatar-idle-arm-right {
+  0%,
+  100% {
+    transform: rotate(-24deg);
+  }
+
+  50% {
+    transform: rotate(-20deg);
+  }
+}
+
+@keyframes walking-avatar-idle-leg-left {
+  0%,
+  100% {
+    transform: rotate(-13deg);
+  }
+
+  50% {
+    transform: rotate(-11deg);
+  }
+}
+
+@keyframes walking-avatar-idle-leg-right {
+  0%,
+  100% {
+    transform: rotate(14deg);
+  }
+
+  50% {
+    transform: rotate(12deg);
+  }
+}
+
+@keyframes walking-avatar-head {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+
+  50% {
+    transform: rotate(3deg);
+  }
+}
+
+@keyframes walking-avatar-body {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+@keyframes walking-avatar-arm-left {
+  0%,
+  100% {
+    transform: rotate(28deg);
+  }
+
+  50% {
+    transform: rotate(-28deg);
+  }
+}
+
+@keyframes walking-avatar-arm-right {
+  0%,
+  100% {
+    transform: rotate(-30deg);
+  }
+
+  50% {
+    transform: rotate(30deg);
+  }
+}
+
+@keyframes walking-avatar-leg-left {
+  0%,
+  100% {
+    transform: rotate(-24deg);
+  }
+
+  50% {
+    transform: rotate(25deg);
+  }
+}
+
+@keyframes walking-avatar-leg-right {
+  0%,
+  100% {
+    transform: rotate(24deg);
+  }
+
+  50% {
+    transform: rotate(-25deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .idleBobbing .hairBack,
+  .idleBobbing .head,
+  .idleBobbing .body,
+  .idleBobbing .arm,
+  .idleBobbing .leg,
+  .walking .figure,
+  .walking .head,
+  .walking .body,
+  .walking .arm,
+  .walking .leg {
+    animation: none;
+  }
+}

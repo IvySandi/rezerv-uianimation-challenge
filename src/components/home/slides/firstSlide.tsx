@@ -1,17 +1,9 @@
 "use client";
 
-import { useMemo } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { bannerIcons } from "@/config/banner.config";
-import type { BannerSlide } from "@/types/banner.type";
-
-type FirstSlideProps = {
-  activeSlide: BannerSlide;
-  isReady: boolean;
-  isVisible: boolean;
-  shouldReduceMotion: boolean;
-};
+import type { FirstSlideProps } from "@/components/home/types/slide.types";
 
 const upperBodyCropPositions = [
   "50% 8%",
@@ -40,44 +32,49 @@ const foregroundIconIds = new Set([
   "chillin-23",
 ]);
 
-export function FirstSlide({
+export function firstSlide({
   activeSlide,
   isReady,
   isVisible,
   shouldReduceMotion,
 }: FirstSlideProps) {
-  const iconAnimation = useMemo(
-    () =>
-      bannerIcons
-        .filter((icon) => icon.id !== hiddenUnderMainIconId)
-        .map((icon, index) => ({
-          ...icon,
-          cropPosition:
-            upperBodyCropPositions[index % upperBodyCropPositions.length],
-          baseRotate: icon.rotate + activeSlide.rotate,
-          rotateKeyframes: shouldReduceMotion
-            ? icon.rotate + activeSlide.rotate
-            : [
-                icon.rotate + activeSlide.rotate,
-                icon.rotate + activeSlide.rotate + 2.2,
-                icon.rotate + activeSlide.rotate - 1.4,
-                icon.rotate + activeSlide.rotate,
-              ],
-          xKeyframes: shouldReduceMotion
-            ? 0
-            : [0, icon.floatX * 0.45, icon.floatX * -0.25, 0],
-          yKeyframes: shouldReduceMotion
-            ? 0
-            : [0, -icon.floatY, 0, icon.floatY * 0.42, 0],
-        })),
-    [activeSlide.rotate, shouldReduceMotion],
-  );
+  const iconAnimation = bannerIcons
+    .filter((icon) => icon.id !== hiddenUnderMainIconId)
+    .map((icon, index) => ({
+      ...icon,
+      cropPosition:
+        upperBodyCropPositions[index % upperBodyCropPositions.length],
+      baseRotate: icon.rotate + activeSlide.rotate,
+      rotateKeyframes: shouldReduceMotion
+        ? icon.rotate + activeSlide.rotate
+        : [
+            icon.rotate + activeSlide.rotate,
+            icon.rotate + activeSlide.rotate + 2.2,
+            icon.rotate + activeSlide.rotate - 1.4,
+            icon.rotate + activeSlide.rotate,
+          ],
+      xKeyframes: shouldReduceMotion
+        ? 0
+        : [0, icon.floatX * 0.45, icon.floatX * -0.25, 0],
+      yKeyframes: shouldReduceMotion
+        ? 0
+        : [0, -icon.floatY, 0, icon.floatY * 0.42, 0],
+    }));
   const backgroundIcons = iconAnimation.filter(
     (icon) => !foregroundIconIds.has(icon.id),
   );
   const foregroundIcons = iconAnimation.filter((icon) =>
     foregroundIconIds.has(icon.id),
   );
+  const fillPatternStyle = {
+    backgroundImage:
+      "url('/assets/transhumans/Chillin.svg'), url('/assets/transhumans/Chillin.svg')",
+    backgroundPosition:
+      "0 0, clamp(5rem,18vw,12rem) clamp(4rem,14vh,8rem)",
+    backgroundRepeat: "repeat, repeat",
+    backgroundSize:
+      "clamp(12rem,40vw,28rem) clamp(12rem,40vw,28rem), clamp(11rem,34vw,24rem) clamp(11rem,34vw,24rem)",
+  };
 
   const renderIcon = (icon: (typeof iconAnimation)[number]) => (
     <motion.div
@@ -125,7 +122,7 @@ export function FirstSlide({
           src={icon.src}
           alt={icon.alt}
           fill
-          sizes="40vw"
+          sizes="(max-width: 640px) 64vw, 40vw"
           draggable={false}
           className="h-full w-full scale-[2.25] object-cover"
           style={{
@@ -139,6 +136,21 @@ export function FirstSlide({
 
   return (
     <>
+      <motion.div
+        className="pointer-events-none absolute inset-0 z-0 bg-black xl:hidden"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isReady && isVisible ? 1 : 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        aria-hidden="true"
+      />
+      <motion.div
+        className="pointer-events-none absolute inset-[-18vmax] z-[1] rotate-[-7deg] scale-110 opacity-95 xl:hidden"
+        style={fillPatternStyle}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isReady && isVisible ? 0.95 : 0 }}
+        transition={{ duration: 0.65, ease: "easeOut" }}
+        aria-hidden="true"
+      />
       <motion.div
         className="absolute inset-0 z-10"
         animate={{

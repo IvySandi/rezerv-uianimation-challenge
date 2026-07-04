@@ -7,7 +7,7 @@ export function BeanCollectionLink({ isReady }: BeanCollectionLinkProps) {
     <a
       href="#"
       aria-label="View collection"
-      className="fixed bottom-[-56px] right-[-18px] z-40 block h-[172px] w-[318px] sm:bottom-[-66px] sm:right-[-12px] sm:h-[204px] sm:w-[374px]"
+      className="fixed bottom-[clamp(-4.1rem,-10vw,-2rem)] right-[clamp(-1.35rem,-2vw,-0.25rem)] z-40 block aspect-[254.73/221.92] w-[clamp(11rem,52vw,23.375rem)]"
       style={{ opacity: isReady ? 1 : 0, pointerEvents: isReady ? "auto" : "none" }}
     >
       <svg

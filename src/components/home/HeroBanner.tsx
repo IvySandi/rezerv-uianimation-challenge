@@ -2,20 +2,22 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import Lottie, { type LottieRefCurrentProps } from "lottie-react";
 import { bannerSlides, socialLinks } from "@/config/banner.config";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SocialDock } from "@/components/layout/SocialDock";
 import { BeanCollectionLink } from "@/components/layout/BeanCollectionLink";
-import { FirstSlide, SecondSlide, StorySlide } from "@/components/home/slides";
-import walkingBusinessWomanAnimation from "../../../public/assets/preloader/Walking business woman.json";
+import {
+  firstSlide as FirstSlide,
+  secondSlide as SecondSlide,
+  thirdSlide as ThirdSlide,
+} from "@/components/home/slides";
+import { HeroCharacter } from "@/components/home/HeroCharacter";
 
 const slideScrollHeightVh = 100;
 const wheelSwipeThreshold = 80;
 const wheelGestureResetMs = 140;
 const touchSwipeThreshold = 90;
 const slideTransitionMs = 950;
-const secondSlideWalkingSpeed = 0.45;
 
 type HeroBannerProps = {
   isReady: boolean;
@@ -29,31 +31,9 @@ export function HeroBanner({ isReady }: HeroBannerProps) {
   const wheelDeltaRef = useRef(0);
   const wheelGestureTimeoutRef = useRef<number | null>(null);
   const touchStartYRef = useRef<number | null>(null);
-  const walkingLottieRef = useRef<LottieRefCurrentProps | null>(null);
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const shouldReduceMotion = useReducedMotion();
   const activeSlide = bannerSlides[activeSlideIndex];
-  const isFirstSlide = activeSlideIndex === 0;
-  const isSecondSlide = activeSlideIndex === 1;
-  const isThirdSlide = activeSlideIndex >= 2;
-  const shouldPlayWalkingAnimation = Boolean(!shouldReduceMotion);
-  const shouldAutoplayWalkingAnimation = Boolean(
-    shouldPlayWalkingAnimation && !isFirstSlide,
-  );
-
-  useEffect(() => {
-    const walkingAnimation = walkingLottieRef.current;
-    if (!walkingAnimation) return;
-
-    if (!shouldAutoplayWalkingAnimation) {
-      walkingAnimation.setSpeed(1);
-      walkingAnimation.goToAndStop(0, true);
-      return;
-    }
-
-    walkingAnimation.setSpeed(isSecondSlide ? secondSlideWalkingSpeed : 1);
-    walkingAnimation.play();
-  }, [isSecondSlide, shouldAutoplayWalkingAnimation]);
 
   useEffect(() => {
     if (hasResetScrollRef.current || !isReady) return;
@@ -89,6 +69,24 @@ export function HeroBanner({ isReady }: HeroBannerProps) {
         window.scrollY >= sectionTop - 2 &&
         window.scrollY <= sectionBottom - window.innerHeight + 2
       );
+    };
+
+    const syncSlideWithScroll = () => {
+      if (isSlideChangingRef.current) return;
+      if (!isInsideHero()) return;
+
+      const nextIndex = Math.min(
+        bannerSlides.length - 1,
+        Math.max(
+          0,
+          Math.round((window.scrollY - getSectionTop()) / window.innerHeight),
+        ),
+      );
+
+      if (nextIndex === activeSlideIndexRef.current) return;
+
+      activeSlideIndexRef.current = nextIndex;
+      setActiveSlideIndex(nextIndex);
     };
 
     const goToSlide = (requestedIndex: number) => {
@@ -222,6 +220,7 @@ export function HeroBanner({ isReady }: HeroBannerProps) {
     };
 
     window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("scroll", syncSlideWithScroll, { passive: true });
     window.addEventListener("touchstart", handleTouchStart, { passive: true });
     window.addEventListener("touchmove", handleTouchMove, { passive: false });
     window.addEventListener("touchend", handleTouchEnd);
@@ -230,6 +229,7 @@ export function HeroBanner({ isReady }: HeroBannerProps) {
 
     return () => {
       window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("scroll", syncSlideWithScroll);
       window.removeEventListener("touchstart", handleTouchStart);
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleTouchEnd);
@@ -262,115 +262,18 @@ export function HeroBanner({ isReady }: HeroBannerProps) {
           isVisible={activeSlideIndex === 0}
           shouldReduceMotion={Boolean(shouldReduceMotion)}
         />
-        <motion.div
-          className="pointer-events-none absolute z-[999] overflow-visible select-none"
-          initial={false}
-          animate={{
-            left: "32vw",
-            top: "38vh",
-            width: "46vw",
-            height: "108vh",
-            minWidth: "30rem",
-            minHeight: "44rem",
-            maxWidth: "none",
-            rotate: -7,
-            opacity: isReady && isFirstSlide ? 1 : 0,
-          }}
-          transition={{
-            duration: shouldReduceMotion ? 0.01 : 0.35,
-            ease: "easeOut",
-          }}
-          style={{ transformOrigin: "center center" }}
-          draggable={false}
-          aria-hidden="true"
-        >
-          <motion.div
-            className="h-full w-full"
-            animate={
-              isReady && isFirstSlide && !shouldReduceMotion
-                ? { y: [0, -16, 0] }
-                : { y: 0 }
-            }
-            transition={{
-              duration: 2.2,
-              repeat: isReady && isFirstSlide && !shouldReduceMotion ? Infinity : 0,
-              ease: "easeInOut",
-            }}
-          >
-            <Lottie
-              animationData={walkingBusinessWomanAnimation}
-              aria-hidden="true"
-              autoplay={false}
-              className="h-full w-full"
-              loop={false}
-              rendererSettings={{
-                preserveAspectRatio: "xMidYMid meet",
-              }}
-            />
-          </motion.div>
-        </motion.div>
-        <motion.div
-          className="pointer-events-none absolute z-30 overflow-hidden select-none will-change-transform"
-          initial={false}
-          animate={{
-            left: isSecondSlide ? "50vw" : "8vw",
-            top: isSecondSlide ? "63vh" : "36vh",
-            width: isSecondSlide ? "42vw" : "36vw",
-            height: isSecondSlide ? "42vw" : "82vh",
-            minWidth: isSecondSlide ? "26rem" : "20rem",
-            minHeight: isSecondSlide ? "26rem" : "36rem",
-            maxWidth: isFirstSlide ? "none" : isSecondSlide ? "42rem" : "30rem",
-            x: isThirdSlide ? "0%" : "-50%",
-            y: isThirdSlide ? "0%" : "-50%",
-            rotate: isSecondSlide ? -90 : -3,
-            opacity: isReady && !isFirstSlide ? 1 : 0,
-          }}
-          transition={{
-            duration: shouldReduceMotion ? 0.01 : 0.9,
-            ease: [0.16, 1, 0.3, 1],
-          }}
-          style={{ transformOrigin: "center center" }}
-          draggable={false}
-          aria-hidden="true"
-        >
-          <motion.div
-            className="absolute inset-0"
-            initial={false}
-            animate={{
-              scale: isFirstSlide ? 1 : isSecondSlide ? 1.04 : 1.02,
-              scaleY: 1,
-              y: 0,
-              rotate: 0,
-            }}
-            transition={{
-              duration: shouldReduceMotion ? 0.01 : 0.9,
-              ease: [0.16, 1, 0.3, 1],
-            }}
-            style={{ transformOrigin: "center center" }}
-          >
-            <div className="h-full w-full">
-              <Lottie
-                animationData={walkingBusinessWomanAnimation}
-                aria-hidden="true"
-                autoplay={shouldAutoplayWalkingAnimation}
-                className="h-full w-full"
-                lottieRef={walkingLottieRef}
-                loop={shouldAutoplayWalkingAnimation}
-                rendererSettings={{
-                  preserveAspectRatio: "xMidYMid meet",
-                }}
-              />
-            </div>
-          </motion.div>
-        </motion.div>
+        <HeroCharacter
+          activeSlideIndex={activeSlideIndex}
+          isReady={isReady}
+          shouldReduceMotion={Boolean(shouldReduceMotion)}
+        />
         <SecondSlide
           isReady={isReady}
           isVisible={activeSlideIndex === 1}
           shouldReduceMotion={Boolean(shouldReduceMotion)}
-          titleClassName="text-[clamp(6rem,20vw,22rem)]"
-          showCharacter={false}
+          titleClassName="text-[clamp(3.5rem,19vw,22rem)]"
         />
-        <StorySlide
+        <ThirdSlide
           isReady={isReady}
           isVisible={activeSlideIndex === 2}
           shouldReduceMotion={Boolean(shouldReduceMotion)}

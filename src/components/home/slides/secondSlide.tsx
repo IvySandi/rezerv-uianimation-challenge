@@ -1,25 +1,19 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { secondSlideShapes } from "./secondSlide.config";
-import type { SecondSlideProps } from "./secondSlide.types";
+import { floatingShapes } from "./slideEffects.config";
+import type { SecondSlideProps } from "@/components/home/types/slide.types";
 
-export function SecondSlide({
+export function secondSlide({
   isReady,
   isVisible,
   shouldReduceMotion,
   title = "Rezerv",
-  characterAlt = "Chillin character",
-  characterClassName = "w-[min(58vw,44rem)]",
-  characterRestY = "-22%",
-  characterExitY = "18%",
-  characterRotate = 86,
-  titleClassName = "text-[clamp(4.75rem,17vw,17.5rem)]",
-  showCharacter = true,
+  titleClassName = "text-[clamp(3.25rem,17vw,17.5rem)]",
 }: SecondSlideProps) {
   return (
     <motion.div
-      className="absolute inset-0 overflow-hidden"
+      className="absolute inset-0 z-20 overflow-hidden"
       initial={{ opacity: 0, scale: 0.98 }}
       animate={
         isReady && isVisible
@@ -29,7 +23,7 @@ export function SecondSlide({
       transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
       aria-hidden={!isVisible}
     >
-      {secondSlideShapes.map((shape, index) => (
+      {floatingShapes.map((shape, index) => (
         <motion.div
           key={`${shape.className}-${index}`}
           className={`pointer-events-none absolute top-full opacity-85 blur-[0.5px] ${shape.className}`}
@@ -52,7 +46,7 @@ export function SecondSlide({
       ))}
 
       <motion.div
-        className="absolute inset-0 flex items-center justify-center px-6"
+        className="absolute inset-0 flex items-center justify-center px-[clamp(1rem,5vw,3rem)]"
         initial={{ y: "16vh", scale: 0.9 }}
         animate={
           isReady && isVisible
@@ -73,37 +67,6 @@ export function SecondSlide({
         >
           {title}
         </motion.h1>
-
-        {showCharacter ? (
-          <motion.img
-            src="/assets/transhumans/Chillin.svg"
-            alt={characterAlt}
-            draggable={false}
-            className={`pointer-events-none absolute left-1/2 top-1/2 z-20 select-none ${characterClassName}`}
-            initial={{ opacity: 0, rotate: characterRotate, scale: 0.68, x: "-50%", y: characterRestY }}
-            animate={
-              isReady && isVisible
-                ? {
-                    opacity: 1,
-                    rotate: shouldReduceMotion
-                      ? characterRotate
-                      : [characterRotate, characterRotate + 2.5, characterRotate - 1.5, characterRotate],
-                    scale: 1,
-                    x: "-50%",
-                    y: shouldReduceMotion
-                      ? characterRestY
-                      : [characterRestY, `calc(${characterRestY} - 3%)`, characterRestY],
-                  }
-                : { opacity: 0, rotate: characterRotate, scale: 0.68, x: "-50%", y: characterExitY }
-            }
-            transition={{
-              opacity: { duration: 0.75, ease: "easeOut" },
-              scale: { duration: 0.85, ease: [0.16, 1, 0.3, 1] },
-              rotate: { duration: 4.2, repeat: shouldReduceMotion ? 0 : Infinity, ease: "easeInOut" },
-              y: { duration: 4.2, repeat: shouldReduceMotion ? 0 : Infinity, ease: "easeInOut" },
-            }}
-          />
-        ) : null}
       </motion.div>
     </motion.div>
   );

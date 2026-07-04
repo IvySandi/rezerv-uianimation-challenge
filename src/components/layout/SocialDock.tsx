@@ -10,7 +10,7 @@ export function SocialDock({ links }: SocialDockProps) {
   return (
     <nav
       aria-label="Social links"
-      className="fixed bottom-[15px] left-5 z-40 flex items-center gap-[13px] sm:bottom-[30px] sm:left-10 sm:gap-5"
+      className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-[clamp(1rem,4vw,2.5rem)] z-40 flex items-center gap-[clamp(0.65rem,2.5vw,1.25rem)]"
     >
       {links.map((link, index) => (
         <motion.a
@@ -19,7 +19,7 @@ export function SocialDock({ links }: SocialDockProps) {
           aria-label={link.label}
           target="_blank"
           rel="noreferrer"
-          className="block size-10 transition-transform"
+          className="block size-[clamp(2rem,8.5vw,2.5rem)] transition-transform"
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           whileHover={{ scale: 0.9 }}
