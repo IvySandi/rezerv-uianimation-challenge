@@ -11,7 +11,7 @@ export default function Home() {
     <main className="min-h-screen bg-[#fffaf1] text-neutral-950">
       <Preloader
         label="Loading the animated landing page"
-        loadingText="LOADING.."
+        loadingText="LOADING..."
         minDuration={2200}
         onComplete={() => setPreloaderDone(true)}
       />
