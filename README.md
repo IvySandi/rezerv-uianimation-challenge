@@ -1,41 +1,53 @@
-# Part 1 UI Animation Challenge
+# Rezerv UI Animation Challenge
 
-Initial setup for the Rezerv Part 1 UI Animation Challenge.
+An animated Rezerv landing page built with Next.js, TypeScript, Tailwind CSS, and Framer Motion. The experience includes a loading screen, sticky scroll-driven hero slides, responsive character animation, social links, and a collection call-to-action.
 
-## Stack
+## Tech Stack
 
-- Next.js with the App Router
-- TypeScript
+- Next.js App Router
+- React and TypeScript
 - Tailwind CSS
-- GSAP with ScrollTrigger
 - Framer Motion
+- Lottie React
 
-## Setup
+## Getting Started
+
+Install dependencies:
 
 ```bash
 npm install
+```
+
+Start the local development server:
+
+```bash
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+Open [http://localhost:3000] in your browser.
 
-## Planned Sections
+## Scripts
 
-- Loading screen / preloader
-- Hero entrance reveal
-- Content / collection section with scroll-triggered animation
+```bash
+npm run dev     
+npm run build    
+npm run start    
+npm run lint     
+```
 
-## Components
+## Project Structure
 
-- `src/components/Preloader.tsx` is a reusable reference-style loading overlay with a pure CSS walking girl animation. It accepts accessible label, loading text, timing, and completion callback props.
-- `src/components/home/HeroBanner.tsx` renders the first slide banner from data in `src/config/banner.config.ts`.
-- `src/components/home/slides` separates the scroll slides into dedicated files.
-- `src/components/layout` contains the fixed Rezerv logo and bottom social navigation, following the sibling `sms-fe` folder style.
-- `src/types/banner.type.ts` holds the banner and social-link types separately, following the sibling `sms-fe` type-file style.
-- The current preloader uses CSS-drawn character parts instead of an image asset.
+- `src/app/page.tsx` renders the landing page and controls the preloader handoff.
+- `src/components/Preloader.tsx` handles the initial loading overlay.
+- `src/components/home/HeroBanner.tsx` coordinates the sticky slide experience and scroll gestures.
+- `src/components/home/HeroCharacter.tsx` renders the animated character shared across slides.
+- `src/components/home/slides` contains the individual slide components.
+- `src/components/layout` contains fixed page UI such as the logo, social dock, and collection link.
+- `src/config/banner.config.ts` stores slide, icon, and social-link configuration.
+- `src/types` contains shared TypeScript types.
 
-## Notes
+## Implementation Notes
 
-- Animations should favor `transform` and `opacity` for smoother rendering.
-- The implementation should support desktop, tablet, and mobile breakpoints.
-- `prefers-reduced-motion` handling should be added during the animation pass.
+- Animations use `transform` and `opacity` where possible for smoother rendering.
+- Layouts are tuned for desktop, tablet, and mobile viewports.
+- Reduced-motion preferences are respected in the main animation paths.

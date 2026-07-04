@@ -18,6 +18,7 @@ const wheelSwipeThreshold = 80;
 const wheelGestureResetMs = 140;
 const touchSwipeThreshold = 90;
 const slideTransitionMs = 950;
+const returnToFirstTransitionMs = 1200;
 
 type HeroBannerProps = {
   isReady: boolean;
@@ -31,7 +32,9 @@ export function HeroBanner({ isReady }: HeroBannerProps) {
   const wheelDeltaRef = useRef(0);
   const wheelGestureTimeoutRef = useRef<number | null>(null);
   const touchStartYRef = useRef<number | null>(null);
+  const slideTransitionIdRef = useRef(0);
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
+  const [previousSlideIndex, setPreviousSlideIndex] = useState(0);
   const shouldReduceMotion = useReducedMotion();
   const activeSlide = bannerSlides[activeSlideIndex];
 
@@ -46,6 +49,7 @@ export function HeroBanner({ isReady }: HeroBannerProps) {
 
     window.scrollTo(0, 0);
     setActiveSlideIndex(0);
+    setPreviousSlideIndex(0);
     activeSlideIndexRef.current = 0;
   }, [isReady]);
 
@@ -85,8 +89,22 @@ export function HeroBanner({ isReady }: HeroBannerProps) {
 
       if (nextIndex === activeSlideIndexRef.current) return;
 
+      const currentIndex = activeSlideIndexRef.current;
+      const isReturningToFirst = currentIndex > 0 && nextIndex === 0;
+      const transitionId = slideTransitionIdRef.current + 1;
+
+      slideTransitionIdRef.current = transitionId;
+      setPreviousSlideIndex(currentIndex);
       activeSlideIndexRef.current = nextIndex;
       setActiveSlideIndex(nextIndex);
+
+      window.setTimeout(
+        () => {
+          if (transitionId !== slideTransitionIdRef.current) return;
+          setPreviousSlideIndex(nextIndex);
+        },
+        shouldReduceMotion ? 50 : isReturningToFirst ? returnToFirstTransitionMs : 50,
+      );
     };
 
     const goToSlide = (requestedIndex: number) => {
@@ -97,6 +115,12 @@ export function HeroBanner({ isReady }: HeroBannerProps) {
 
       if (nextIndex === activeSlideIndexRef.current) return;
 
+      const currentIndex = activeSlideIndexRef.current;
+      const isReturningToFirst = currentIndex > 0 && nextIndex === 0;
+      const transitionId = slideTransitionIdRef.current + 1;
+
+      slideTransitionIdRef.current = transitionId;
+      setPreviousSlideIndex(currentIndex);
       activeSlideIndexRef.current = nextIndex;
       isSlideChangingRef.current = true;
       setActiveSlideIndex(nextIndex);
@@ -107,8 +131,11 @@ export function HeroBanner({ isReady }: HeroBannerProps) {
       });
 
       window.setTimeout(() => {
+        if (transitionId !== slideTransitionIdRef.current) return;
+
         isSlideChangingRef.current = false;
-      }, shouldReduceMotion ? 50 : slideTransitionMs);
+        setPreviousSlideIndex(nextIndex);
+      }, shouldReduceMotion ? 50 : isReturningToFirst ? returnToFirstTransitionMs : slideTransitionMs);
     };
 
     const getNormalizedWheelDeltaY = (event: WheelEvent) => {
@@ -264,6 +291,7 @@ export function HeroBanner({ isReady }: HeroBannerProps) {
         />
         <HeroCharacter
           activeSlideIndex={activeSlideIndex}
+          previousSlideIndex={previousSlideIndex}
           isReady={isReady}
           shouldReduceMotion={Boolean(shouldReduceMotion)}
         />

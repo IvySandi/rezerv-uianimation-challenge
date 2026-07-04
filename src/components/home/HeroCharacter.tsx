@@ -6,13 +6,17 @@ import type { HeroCharacterProps } from "@/components/home/types/heroCharacter.t
 
 export function HeroCharacter({
   activeSlideIndex,
+  previousSlideIndex,
   isReady,
   shouldReduceMotion,
 }: HeroCharacterProps) {
   const isFirstSlide = activeSlideIndex === 0;
   const isSecondSlide = activeSlideIndex === 1;
+  const isReturningToFirst =
+    isReady && previousSlideIndex > 0 && isFirstSlide;
   const shouldBobCharacter = isReady && isFirstSlide && !shouldReduceMotion;
   const shouldWalkCharacter = isReady && !isFirstSlide && !shouldReduceMotion;
+  const shouldPlaceCharacter = isReturningToFirst && !shouldReduceMotion;
 
   return (
     <motion.div
@@ -21,8 +25,16 @@ export function HeroCharacter({
       }`}
       initial={false}
       animate={{
-        left: isFirstSlide ? "48vw" : isSecondSlide ? "50vw" : "clamp(-1.5rem,5vw,4rem)",
-        top: isFirstSlide ? "78vh" : isSecondSlide ? "63vh" : "clamp(7rem,20vh,12rem)",
+        left: isFirstSlide
+          ? "48vw"
+          : isSecondSlide
+            ? "50vw"
+            : "clamp(-1.5rem,5vw,4rem)",
+        top: isFirstSlide
+          ? "78vh"
+          : isSecondSlide
+            ? "63vh"
+            : "clamp(7rem,20vh,12rem)",
         width: "clamp(12rem,76vmin,42rem)",
         height: "clamp(16.35rem,103.55vmin,57.225rem)",
         minWidth: "0rem",
@@ -36,8 +48,14 @@ export function HeroCharacter({
         opacity: isReady ? 1 : 0,
       }}
       transition={{
-        duration: shouldReduceMotion || isFirstSlide ? 0.01 : 0.9,
-        ease: [0.16, 1, 0.3, 1],
+        duration: shouldReduceMotion
+          ? 0.01
+          : shouldPlaceCharacter
+            ? 1.2
+            : isFirstSlide
+              ? 0.01
+              : 0.9,
+        ease: shouldPlaceCharacter ? [0.2, 0.9, 0.2, 1] : [0.16, 1, 0.3, 1],
       }}
       style={{ transformOrigin: "center center" }}
       draggable={false}
@@ -48,25 +66,39 @@ export function HeroCharacter({
         className="absolute inset-0"
         initial={false}
         animate={{
-          scale: 1,
+          scale: shouldPlaceCharacter ? [1, 1.08, 1.03, 1] : 1,
           scaleY: 1,
-          y: shouldBobCharacter ? [0, -14, 0] : 0,
-          rotate: 0,
+          y: shouldPlaceCharacter
+            ? [0, -64, -42, 0]
+            : shouldBobCharacter
+              ? [0, -14, 0]
+              : 0,
+          rotate: shouldPlaceCharacter ? [0, 3, -2, 0] : 0,
         }}
         transition={{
           scale: {
-            duration: shouldReduceMotion ? 0.01 : 0.9,
-            ease: [0.16, 1, 0.3, 1],
+            duration: shouldPlaceCharacter ? 1.2 : shouldReduceMotion ? 0.01 : 0.9,
+            ease: shouldPlaceCharacter
+              ? [0.2, 0.9, 0.2, 1]
+              : [0.16, 1, 0.3, 1],
           },
           scaleY: {
             duration: shouldReduceMotion ? 0.01 : 0.9,
             ease: [0.16, 1, 0.3, 1],
           },
           rotate: {
-            duration: shouldReduceMotion ? 0.01 : 0.9,
-            ease: [0.16, 1, 0.3, 1],
+            duration: shouldPlaceCharacter ? 1.2 : shouldReduceMotion ? 0.01 : 0.9,
+            ease: shouldPlaceCharacter
+              ? [0.2, 0.9, 0.2, 1]
+              : [0.16, 1, 0.3, 1],
           },
-          y: shouldBobCharacter
+          y: shouldPlaceCharacter
+            ? {
+                duration: 1.2,
+                times: [0, 0.36, 0.72, 1],
+                ease: [0.2, 0.9, 0.2, 1],
+              }
+            : shouldBobCharacter
             ? {
                 duration: 2.2,
                 repeat: Infinity,
