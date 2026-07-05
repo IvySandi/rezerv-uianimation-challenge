@@ -74,17 +74,17 @@ export const bannerSlides: BannerSlide[] = [
 export const socialLinks: SocialLink[] = [
   {
     label: "Discord",
-    href: "https://discord.com",
+    href: "#",
     iconSrc: "/assets/social/discord.svg",
   },
   {
     label: "OpenSea",
-    href: "https://opensea.io",
+    href: "#",
     iconSrc: "/assets/social/opensea.svg",
   },
   {
     label: "Twitter",
-    href: "https://twitter.com",
+    href: "#",
     iconSrc: "/assets/social/twitter.svg",
   },
 ];
