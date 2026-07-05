@@ -1,6 +1,6 @@
 # Rezerv UI Animation Challenge
 
-An animated Rezerv landing page built with Next.js, TypeScript, Tailwind CSS, and Framer Motion. The experience includes a loading screen, sticky scroll-driven hero slides, responsive character animation, social links, and a collection call-to-action.
+An animated landing page built with Next.js, TypeScript, Tailwind CSS, and Framer Motion. The experience includes a loading screen, sticky scroll-driven hero slides, responsive character animation, social links, and a collection button.
 
 ## Tech Stack
 
@@ -12,17 +12,13 @@ An animated Rezerv landing page built with Next.js, TypeScript, Tailwind CSS, an
 
 ## Getting Started
 
-Install dependencies:
-
-```bash
 npm install
-```
 
-Start the local development server:
 
-```bash
+## Start the local development server:
+
 npm run dev
-```
+
 
 Open [http://localhost:3000] in your browser.
 
