@@ -71,6 +71,5 @@ npm run lint
 - This is a single animated landing-page hero rather than a multi-page site.
 - The three requested slides are the three configured banner states: `wide`, `brand-intro`, and `walking-story`.
 - Placeholder story copy in the third slide is acceptable because the task focus is animation and component behavior.
-- Social links use public platform URLs as placeholders.
 - `Chillin.svg` and walking Lottie JSON are the intended visual assets for the animation.
 
