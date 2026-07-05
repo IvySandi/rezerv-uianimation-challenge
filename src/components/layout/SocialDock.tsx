@@ -17,8 +17,6 @@ export function SocialDock({ links }: SocialDockProps) {
           key={link.label}
           href={link.href}
           aria-label={link.label}
-          target="_blank"
-          rel="noreferrer"
           className="block size-[clamp(2rem,8.5vw,2.5rem)] transition-transform"
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
